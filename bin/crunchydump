@@ -1,0 +1,120 @@
+#!/usr/bin/env node
+
+var Promise = require('bluebird')
+var nomnom = require('nomnom')
+
+var crunchydump = require('../lib')
+var Client = crunchydump.Client
+var download = crunchydump.download
+var save = crunchydump.save
+var name = crunchydump.name
+
+var options = nomnom
+.script("crunchydump")
+.option('user', {
+	abbr: 'u',
+	metavar: 'NAME',
+	help: 'User name',
+	type: 'string',
+	required: false
+})
+.option('password', {
+	abbr: 'p',
+	metavar: 'PASSWORD',
+	help: 'Password',
+	type: 'string',
+	required: false
+})
+.option('series', {
+	abbr: 's',
+	metavar: 'NAME',
+	help: 'Search series by name or it\'s portion',
+	required: true
+})
+.option('chapterNumber', {
+	abbr: 'n',
+	full: 'chapter-number',
+	metavar: 'NUMBER',
+	help: 'Chapter number',
+	required: false,
+	type: 'number'
+})
+.option('chapterID', {
+	abbr: 'i',
+	full: 'chapter-id',
+	metavar: 'ID',
+	help: 'Chapter ID',
+	required: false,
+	type: 'string'
+})
+.parse()
+
+var client = new Client()
+var dir = process.cwd()
+
+function findSeries (seriesList, name) {
+	return seriesList.filter(function (series) {
+		return series.locale.enUS.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+	})
+}
+
+function byChapterID (chapterID) {
+	return function (chapter) {
+		return chapter.chapter_id === chapterID
+	}
+}
+
+function byChapterNumber (chapterNumber) {
+	return function (chapter) {
+		return name.chapterNumber(chapter) === chapterNumber
+	}
+}
+
+function lastChapter () {
+	return function (chapter, i, chapters) {
+		return i === chapters.length - 1
+	}
+}
+
+function findChapter (predicate, series, chapters, client) {
+	var chapter = chapters.chapters.filter(predicate).pop()
+	if (!chapter) throw "Can't find matching chapter"
+	console.log("Downloading chapter %s (%s)", name.chapterNumber(chapter), chapter.chapter_id)
+	return Promise.join(series, client.getChapter(chapter))
+}
+
+client
+.login(options.user, options.password)
+.then(function (user) {
+	if (user) console.log("Logged in as %s", user.username)
+	return client.getSeries()
+})
+.then(function (series) {
+	var foundSeries = findSeries(series, options.series)
+	if (!foundSeries.length) throw "Can't find matching series"
+	console.log("Series found: %s", foundSeries[0].locale.enUS.name)
+	return Promise.join(foundSeries, client.getChapters(foundSeries[0]))
+})
+.spread(function (series, chapters) {
+	if (options.chapterID) {
+		return findChapter(byChapterID(options.chapterID), series, chapters, client)
+	} else
+	if (options.chapterNumber) {
+		return findChapter(byChapterNumber(options.chapterNumber), series, chapters, client)
+	} else {
+		return findChapter(lastChapter(options.chapterID), series, chapters, client)
+	}
+})
+.spread(function (series, chapter) {
+	return Promise.join(series, chapter, download.chapter(chapter))
+})
+.spread(function (series, chapter, pageBuffers) {
+	var fileName = name.chapterFile(series, chapter)
+	return Promise.join(fileName, save.chapter(dir + "/" + fileName, chapter, pageBuffers))
+})
+.spread(function (fileName) {
+	console.log("Chapter saved to: %s", fileName)
+})
+.catch(function (err) {
+	console.error(err)
+})

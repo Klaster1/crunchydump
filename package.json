@@ -1,0 +1,30 @@
+{
+  "name": "crunchydump",
+  "version": "0.0.1",
+  "description": "Crunchyroll manga downloader",
+  "main": "lib",
+  "dependencies": {
+    "archiver": "^0.5.2",
+    "bluebird": "^2.6.2",
+    "lodash-node": "^2.4.1",
+    "nomnom": "^1.8.1",
+    "request-promise": "^0.3.2",
+    "underscore.string": "^2.4.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "manga",
+    "crunchyroll"
+  ],
+  "homepage": "https://github.com/klaster1/crunchydump",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/klaster1/crunchydump.git"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "crunchydump": "bin/crunchydump"
+  },
+  "author": "Klaster_1",
+  "license": "ISC"
+}
