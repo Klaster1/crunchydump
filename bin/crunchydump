@@ -80,7 +80,7 @@ function findChapter (predicate, series, chapters, client) {
 	var chapter = chapters.chapters.filter(predicate).pop()
 	if (!chapter) throw "Can't find matching chapter"
 	console.log("Downloading chapter %s (%s)", name.chapterNumber(chapter), chapter.chapter_id)
-	return Promise.join(series, client.getChapter(chapter))
+	return Promise.join(series, client.listChapter({chapter_id: chapter.chapter_id}))
 }
 
 client
