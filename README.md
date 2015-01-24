@@ -35,7 +35,5 @@ crunchydump -s space -n 241 -u username -p password
 All files are downloaded into current working dir.
 #Known issues
 
- 1. I did not test if authorisation allows to download chapters viewable
-    only with premium subscription.
- 2. Image composing is not implemented. There are some missing page images that can be fixed programmatically.
- 3. Volume and series downloading was not implemented because both functions require premium subscription.
+ 1. Image composing is not implemented. There are some missing page images that can be fixed this way.
+ 2. Volume and series downloading was not implemented because both functions require premium subscription.
