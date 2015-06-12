@@ -17,6 +17,7 @@ Options:
    --host                               API host URL
    --db URL                             MongoDB URL  [mongodb://localhost:27017/crunchydump]
    --dump                               Dump everything into MongoDB
+   --serve                              Run API mirror at http://localhost:3333/ serving data from <db>
 ```
 ###Examples
 Download last chapter of *Space Brothers*
