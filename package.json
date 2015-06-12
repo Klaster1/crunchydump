@@ -7,7 +7,9 @@
     "archiver": "^0.5.2",
     "bluebird": "^2.9.27",
     "lodash-node": "^3.9.3",
+    "mongodb": "^2.0.33",
     "nomnom": "^1.8.1",
+    "progress": "^1.1.8",
     "request-promise": "^0.3.2"
   },
   "devDependencies": {},

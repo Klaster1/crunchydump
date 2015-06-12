@@ -29,7 +29,7 @@ var options = nomnom
 	abbr: 's',
 	metavar: 'NAME',
 	help: 'Search series by name or it\'s portion',
-	required: true
+	required: false
 })
 .option('chapterNumber', {
 	abbr: 'n',
@@ -52,7 +52,22 @@ var options = nomnom
 	required: false,
 	type: 'string'
 })
+.option('db', {
+	help: 'MongoDB URL',
+	metavar: 'URL',
+	required: false,
+	type: 'string',
+	default: 'mongodb://localhost:27017/crunchydump'
+})
+.option('dump', {
+	flag: true,
+	help: 'Dump everything into MongoDB'
+})
 .parse()
+
+if (options.dump) return crunchydump.db.dumpAll({
+	url: options.db
+})
 
 var client = new Client({host: options.host})
 var dir = process.cwd()
