@@ -5,11 +5,10 @@
   "main": "lib",
   "dependencies": {
     "archiver": "^0.5.2",
-    "bluebird": "^2.6.2",
-    "lodash-node": "^2.4.1",
+    "bluebird": "^2.9.27",
+    "lodash-node": "^3.9.3",
     "nomnom": "^1.8.1",
-    "request-promise": "^0.3.2",
-    "underscore.string": "^2.4.0"
+    "request-promise": "^0.3.2"
   },
   "devDependencies": {},
   "keywords": [
