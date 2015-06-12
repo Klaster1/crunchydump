@@ -35,6 +35,8 @@ Download with authorisation
 ```shell
 crunchydump -s space -n 241 -u username -p password
 ```
+All files are downloaded into current working dir.
+
 Dump everything into MongoDB
 ```shell
 cruncnydump --dump
@@ -42,12 +44,11 @@ cruncnydump --dump
 Run local API mirror
 ```shell
 crunchydump --serve
-All files are downloaded into current working dir.
+```
 ###Dumping into DB
 Crunchydump can crawl API and dump all gathered data into database. For this to work, you'll have to install [MongoDB](https://www.mongodb.org/downloads). Don't forget to run `mongod` before start.
 ###Downloading from local DB
-After you've dumped everything, it's possible to start local API mirror (default address is http://localhost:3333). With it running, add `--host "http://localhost:3333"` to every download command in order to use dumped data. This way you can maintain local Crunchyroll copy and bother less about expires free simulpub chapters.
-
+After you've dumped everything, it's possible to start local API mirror (default address is http://localhost:3333). With it running, add `--host "http://localhost:3333"` to every download command in order to use dumped data. This way you can maintain local Crunchyroll copy and bother less about expires free simulpub chapters. In this mode, user credentials are not required.
 #Known issues
 
  1. Image composing is not implemented. There are some missing page images that can be fixed this way.
