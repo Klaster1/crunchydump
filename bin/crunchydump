@@ -47,9 +47,14 @@ var options = nomnom
 	required: false,
 	type: 'string'
 })
+.option('host', {
+	help: 'API host URL',
+	required: false,
+	type: 'string'
+})
 .parse()
 
-var client = new Client()
+var client = new Client({host: options.host})
 var dir = process.cwd()
 
 function findSeries (seriesList, name) {
