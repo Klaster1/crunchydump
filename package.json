@@ -6,6 +6,7 @@
   "dependencies": {
     "archiver": "^0.5.2",
     "bluebird": "^2.9.27",
+    "express": "^4.12.4",
     "lodash-node": "^3.9.3",
     "mongodb": "^2.0.33",
     "nomnom": "^1.8.1",

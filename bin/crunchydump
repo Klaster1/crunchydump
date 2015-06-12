@@ -63,9 +63,17 @@ var options = nomnom
 	flag: true,
 	help: 'Dump everything into MongoDB'
 })
+.option('serve', {
+	flag: true,
+	help: 'Run API mirror at http://localhost:3333/ serving data from <db>'
+})
 .parse()
 
 if (options.dump) return crunchydump.db.dumpAll({
+	url: options.db
+})
+
+if (options.serve) return crunchydump.serve.runServer({
 	url: options.db
 })
 
