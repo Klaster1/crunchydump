@@ -70,7 +70,9 @@ var options = nomnom
 .parse()
 
 if (options.dump) return crunchydump.db.dumpAll({
-	url: options.db
+	url: options.db,
+	user: options.user,
+	password: options.password
 })
 
 if (options.serve) return crunchydump.serve.runServer({
