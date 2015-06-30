@@ -17,6 +17,7 @@ Options:
    -i ID, --chapter-id ID               Chapter ID
    --host                               API host URL
    --db URL                             MongoDB URL  [mongodb://localhost:27017/crunchydump]
+   -l, --from-db                        Use data from MongoDB at <db>  [false]
    --dump                               Dump everything into MongoDB
    --serve                              Run API mirror at http://localhost:3333/ serving data from <db>
 ```
@@ -28,6 +29,10 @@ crunchydump -s space
 Download whole *Space Brothers* series
 ```shell
 crunchydump -s space -w
+```
+Download whole *Space Brothers* series using data from local MongoDB
+```shell
+crunchydump -s space -wl
 ```
 Download chapter by ID
 ```shell

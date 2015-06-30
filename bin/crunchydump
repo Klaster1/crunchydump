@@ -65,6 +65,13 @@ var options = nomnom
 	type: 'string',
 	default: 'mongodb://localhost:27017/crunchydump'
 })
+.option('fromDB', {
+	help: 'Use data from MongoDB at <db>',
+	abbr: 'l',
+	full: 'from-db',
+	flag: true,
+	default: false
+})
 .option('dump', {
 	flag: true,
 	help: 'Dump everything into MongoDB'
@@ -85,30 +92,56 @@ if (options.serve) return crunchydump.serve.runServer({
 	url: options.db
 })
 
-var client = new Client({host: options.host})
-
 function findSeries (seriesList, name) {
 	return seriesList.filter(function (series) {
 		return series.locale.enUS.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
 	})
 }
 
-client
-.login(options.user, options.password)
-.then(function (user) {
-	if (user) console.log("Logged in as %s", user.username)
-	return client.getSeries()
-})
-.then(function (series) {
-	var foundSeries = findSeries(series, options.series)
-	if (!foundSeries.length) throw "Can't find matching series"
-	console.log("Series found: %s", foundSeries[0].locale.enUS.name)
-	return foundSeries
-})
-.then(function (foundSeries) {
-	if (options.wholeSeries) {
-		return download.series(foundSeries[0], client)
+new Promise(function(resolve, reject) {
+	if (options.fromDB) {
+		resolve(crunchydump.serve.runServer({
+			url: options.db,
+			log: false
+		}).then(function(server) {
+			return Promise.props({
+				client: new Client({host: options.host || 'http://localhost:3333'}),
+				server: server
+			})
+		}))
 	} else {
-		return download.default(foundSeries, client, options)
+		resolve(Promise.props({
+			client: new Client({host: options.host}),
+			server: null
+		}))
 	}
+})
+.then(function(data) {
+	var client = data.client
+	var server = data.server
+
+	return client
+	.login(options.user, options.password)
+	.then(function (user) {
+		if (user) console.log("Logged in as %s", user.username)
+		return client.getSeries()
+	})
+	.then(function (series) {
+		var foundSeries = findSeries(series, options.series)
+		if (!foundSeries.length) throw "Can't find matching series"
+		console.log("Series found: %s", foundSeries[0].locale.enUS.name)
+		return foundSeries
+	})
+	.then(function (foundSeries) {
+		if (options.wholeSeries) {
+			return download.series(foundSeries[0], client)
+		} else {
+			return download.default(foundSeries, client, options)
+		}
+	})
+	.finally(function() {
+		if (!server) return
+		server.express.close()
+		server.db.close()
+	})
 })
