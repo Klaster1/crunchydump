@@ -31,6 +31,12 @@ var options = nomnom
 	help: 'Search series by name or it\'s portion',
 	required: false
 })
+.option('wholeSeries', {
+	abbr: 'w',
+	full: 'whole-series',
+	help: 'Download whole series',
+	flag: true
+})
 .option('chapterNumber', {
 	abbr: 'n',
 	full: 'chapter-number',
@@ -80,37 +86,11 @@ if (options.serve) return crunchydump.serve.runServer({
 })
 
 var client = new Client({host: options.host})
-var dir = process.cwd()
 
 function findSeries (seriesList, name) {
 	return seriesList.filter(function (series) {
 		return series.locale.enUS.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
 	})
-}
-
-function byChapterID (chapterID) {
-	return function (chapter) {
-		return chapter.chapter_id === chapterID
-	}
-}
-
-function byChapterNumber (chapterNumber) {
-	return function (chapter) {
-		return name.chapterNumber(chapter) === chapterNumber
-	}
-}
-
-function lastChapter () {
-	return function (chapter, i, chapters) {
-		return i === chapters.length - 1
-	}
-}
-
-function findChapter (predicate, series, chapters, client) {
-	var chapter = chapters.chapters.filter(predicate).pop()
-	if (!chapter) throw "Can't find matching chapter"
-	console.log("Downloading chapter %s (%s)", name.chapterNumber(chapter), chapter.chapter_id)
-	return Promise.join(series, client.listChapter({chapter_id: chapter.chapter_id}))
 }
 
 client
@@ -123,28 +103,12 @@ client
 	var foundSeries = findSeries(series, options.series)
 	if (!foundSeries.length) throw "Can't find matching series"
 	console.log("Series found: %s", foundSeries[0].locale.enUS.name)
-	return Promise.join(foundSeries, client.getChapters(foundSeries[0]))
+	return foundSeries
 })
-.spread(function (series, chapters) {
-	if (options.chapterID) {
-		return findChapter(byChapterID(options.chapterID), series, chapters, client)
-	} else
-	if (options.chapterNumber) {
-		return findChapter(byChapterNumber(options.chapterNumber), series, chapters, client)
+.then(function (foundSeries) {
+	if (options.wholeSeries) {
+		return download.series(foundSeries[0], client)
 	} else {
-		return findChapter(lastChapter(options.chapterID), series, chapters, client)
+		return download.default(foundSeries, client, options)
 	}
-})
-.spread(function (series, chapter) {
-	return Promise.join(series, chapter, download.chapter(chapter))
-})
-.spread(function (series, chapter, pageBuffers) {
-	var fileName = name.chapterFile(series, chapter)
-	return Promise.join(fileName, save.chapter(dir + "/" + fileName, chapter, pageBuffers))
-})
-.spread(function (fileName) {
-	console.log("Chapter saved to: %s", fileName)
-})
-.catch(function (err) {
-	console.error(err)
 })

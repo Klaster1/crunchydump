@@ -12,6 +12,7 @@ Options:
    -u NAME, --user NAME                 User name
    -p PASSWORD, --password PASSWORD     Password
    -s NAME, --series NAME               Search series by name or it's portion
+   -w, --whole-series                   Download whole series
    -n NUMBER, --chapter-number NUMBER   Chapter number
    -i ID, --chapter-id ID               Chapter ID
    --host                               API host URL
@@ -23,6 +24,10 @@ Options:
 Download last chapter of *Space Brothers*
 ```shell
 crunchydump -s space
+```
+Download whole *Space Brothers* series
+```shell
+crunchydump -s space -w
 ```
 Download chapter by ID
 ```shell
@@ -53,4 +58,4 @@ After you've dumped everything, it's possible to start local API mirror (default
 #Known issues
 
  1. Image composing is not implemented. There are some missing page images that can be fixed this way.
- 2. Volume and series downloading was not implemented because both functions require premium subscription.
+ 2. Volume ~~and series~~ downloading was not implemented because both functions require premium subscription.
