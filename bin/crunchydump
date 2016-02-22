@@ -94,7 +94,14 @@ if (options.serve) return crunchydump.serve.runServer({
 
 function findSeries (seriesList, name) {
 	return seriesList.filter(function (series) {
-		return series.locale.enUS.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+		var seriesName
+		if (series.locale) {
+			seriesName = series.locale.enUS.name
+		} else {
+			// Some series don't have locale for whatever reason, use URL instead
+			seriesName = series.url.replace('/','').replace(/-/g, ' ')
+		}
+		return seriesName.toLowerCase().indexOf(name.toLowerCase()) !== -1
 	})
 }
 
