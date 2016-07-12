@@ -1,6 +1,7 @@
 #Crunchydump
 Crunchyroll manga downloader.
 ##Installation
+With [Node.js](https://nodejs.org) installed, execute the following in terminal:
 ```bash
 npm install klaster1/crunchydump --global
 ```
